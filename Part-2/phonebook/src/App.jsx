@@ -14,12 +14,23 @@ const App = () => {
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
 
+  // useEffect(() => {
+  //   personsService.getAll().then((initialPersons) => {
+  //     console.log(initialPersons)
+  //     setPersons(initialPersons);
+  //   });
+  // }, []);
+
   useEffect(() => {
-    personsService.getAll().then((initialPersons) => {
-      console.log(initialPersons)
-      setPersons(initialPersons);
-    });
-  }, []);
+    personsService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
+      })
+      .catch(error => {
+        console.error('Error fetching persons:', error)
+      })
+  }, [])
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
