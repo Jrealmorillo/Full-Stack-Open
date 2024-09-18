@@ -32,17 +32,27 @@ const App = () => {
     const confirmChange = window.confirm(
       `${newName} is already added to the phonebook, replace the old number with a new one?`
     );
-  
+
     if (confirmChange) {
       const changedPerson = { ...person, number: newNumber };
-  
+
       personsService
         .update(id, changedPerson)
         .then((returnedPerson) => {
-          setPersons(persons.map((person) => (person.id === id ? returnedPerson : person)));
+          setPersons(
+            persons.map((person) =>
+              person.id === id ? returnedPerson : person
+            )
+          );
+          setSuccessMessage(`Updated ${returnedPerson.name}'s phone number`);
+          setTimeout(() => {
+            setSuccessMessage(null);
+          }, 5000);
+          setNewName("");
+          setNewNumber("");
         })
         .catch((error) => {
-          setErrorMessage(`'${person.name}' was already removed from server`);
+          setErrorMessage(`${person.name}'s phone could not be updated. ${newNumber} might not be a valid number`);
           setTimeout(() => {
             setErrorMessage(null);
           }, 5000);
@@ -51,7 +61,6 @@ const App = () => {
         });
     }
   };
-
 
   const addName = (event) => {
     event.preventDefault();
@@ -66,25 +75,25 @@ const App = () => {
         id: (persons.length + 1).toString(),
       };
       personsService
-      .create(nameObject)
-      .then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setSuccessMessage(`'Added ${returnedPerson.name}'`);
-        setTimeout(() => {
-          setSuccessMessage(null);
-        }, 5000);
-        setNewName("");
-        setNewNumber("");
-      })
-      .catch(error => {
-        console.log(error.response.data.error)
-        setErrorMessage(`${error.response.data.error}`)
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
-        setNewName("");
-        setNewNumber("");
-      });
+        .create(nameObject)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setSuccessMessage(`Added ${returnedPerson.name}`);
+          setTimeout(() => {
+            setSuccessMessage(null);
+          }, 5000);
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((error) => {
+          console.log(error.response.data.error);
+          setErrorMessage(`${error.response.data.error}`);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
+          setNewName("");
+          setNewNumber("");
+        });
     }
   };
 
@@ -121,8 +130,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      {successMessage && <Notification message={successMessage}/>}
-      {errorMessage && <ErrorNotification message={errorMessage}/>}
+      {successMessage && <Notification message={successMessage} />}
+      {errorMessage && <ErrorNotification message={errorMessage} />}
       <Filter name={"filter"} value={filter} onChange={handleInputChange} />
       <h3>Add a new</h3>
       <PersonForm
